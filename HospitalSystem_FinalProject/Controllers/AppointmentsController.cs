@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using HospitalSystem_FinalProject.Data;
 using HospitalSystem_FinalProject.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace HospitalSystem_FinalProject.Controllers
 {
@@ -23,8 +24,14 @@ namespace HospitalSystem_FinalProject.Controllers
         // GET: Appointments
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Appointments.Include(a => a.Doctor).Include(a => a.Hospital);
-            return View(await applicationDbContext.ToListAsync());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var appointments = await _context.Appointments
+                .Where(a => a.UserId == userId)
+                .Include(a => a.Doctor)
+                .Include(a => a.Hospital)
+                .ToListAsync();
+
+            return View(appointments);
         }
 
         // GET: Appointments/Details/5
@@ -58,18 +65,18 @@ namespace HospitalSystem_FinalProject.Controllers
         // POST: Appointments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AppointmentId,DoctorId,HospitalId,AppointmentDateTime")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("DoctorId,HospitalId,AppointmentDateTime")] Appointment appointment)
         {
             if (ModelState.IsValid)
             {
+                appointment.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["HospitalId"] = new SelectList(_context.Hospitals, "HospitalId", "Name", appointment.HospitalId);
-            ViewData["DoctorId"] = new SelectList(await _context.Doctors.Where(d => d.HospitalId == appointment.HospitalId).ToListAsync(), "DoctorId", "Name", appointment.DoctorId);
             return View(appointment);
         }
+
 
         // GET: Appointments/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -86,7 +93,7 @@ namespace HospitalSystem_FinalProject.Controllers
             }
             ViewData["DoctorId"] = new SelectList(_context.Doctors, "DoctorId", "Name", appointment.DoctorId);
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "HospitalId", "Name", appointment.HospitalId);
-            
+
 
             return View(appointment);
         }
