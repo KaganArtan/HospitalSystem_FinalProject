@@ -59,7 +59,7 @@ namespace HospitalSystem_FinalProject.Controllers
         {
             ViewData["HospitalId"] = new SelectList(_context.Hospitals, "HospitalId", "Name");
             ViewData["DoctorId"] = new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text");
-            return View();
+            return PartialView("_CreatePartial");
         }
 
         // POST: Appointments/Create
@@ -72,10 +72,11 @@ namespace HospitalSystem_FinalProject.Controllers
                 appointment.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 _context.Add(appointment);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return Json(new { success = true });
             }
-            return View(appointment);
+            return PartialView("_CreatePartial", appointment);
         }
+
 
 
         // GET: Appointments/Edit/5

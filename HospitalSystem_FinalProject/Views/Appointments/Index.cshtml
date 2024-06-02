@@ -7,7 +7,7 @@
 <h1>Randevularım</h1>
 
 <p>
-    <a asp-action="Create">Yeni Randevu Al</a>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createAppointmentModal">Yeni Randevu Al</button>
 </p>
 <table class="table">
     <thead>
@@ -46,3 +46,73 @@
         }
     </tbody>
 </table>
+
+<!-- Create Appointment Modal -->
+<div class="modal fade" id="createAppointmentModal" tabindex="-1" role="dialog" aria-labelledby="createAppointmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createAppointmentModalLabel">Yeni Randevu Al</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="createAppointmentContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#createAppointmentModal').on('show.bs.modal', function (e) {
+                $.get('@Url.Action("Create")', function (data) {
+                    $('#createAppointmentContent').html(data);
+                    bindHospitalChangeEvent();
+                });
+            });
+
+            function bindHospitalChangeEvent() {
+                $('#HospitalId').change(function () {
+                    var hospitalId = $(this).val();
+                    $.ajax({
+                        url: '@Url.Action("GetDoctorsByHospital")',
+                        type: 'GET',
+                        data: { hospitalId: hospitalId },
+                        success: function (data) {
+                            var doctorSelect = $('#DoctorId');
+                            doctorSelect.empty();
+                            $.each(data, function (index, doctor) {
+                                doctorSelect.append('<option value="' + doctor.doctorId + '">' + doctor.name + '</option>');
+                            });
+                        }
+                    });
+                });
+            }
+
+            $(document).on('submit', '#createAppointmentForm', function (e) {
+                e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Create")',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload(); // Refresh the page
+                        } else {
+                            $('#createAppointmentContent').html(response);
+                            bindHospitalChangeEvent(); // Re-bind the event after updating the content
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
