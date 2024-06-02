@@ -180,10 +180,10 @@ namespace HospitalSystem_FinalProject.Controllers
 
         public async Task<IActionResult> Doctors(int hospitalId)
         {
+
             var doctors = await _context.Doctors.Where(d => d.HospitalId == hospitalId).ToListAsync();
             return View(doctors);
         }
-
 
     }
 

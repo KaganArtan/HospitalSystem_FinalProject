@@ -28,15 +28,27 @@ public class Specialization
     public string Domain { get; set; } = string.Empty;
 }
 
+public class Comment
+{
+    public int CommentId { get; set; }
+    public string Content { get; set; } = string.Empty;
+    public int Rating { get; set; } // 1 to 5
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+    public int DoctorId { get; set; }
+    public Doctor? Doctor { get; set; }
+}
+
 public class Doctor
 {
     public int DoctorId { get; set; }
     public string Name { get; set; } = string.Empty;
-    public int SpecializationId { get; set; } // Add this property
+    public int SpecializationId { get; set; }
     public Specialization? Specialization { get; set; }
     public int HospitalId { get; set; }
     public Hospital? Hospital { get; set; }
     public List<Appointment>? Appointments { get; set; }
+    public List<Comment>? Comments { get; set; } // Add this property
 }
 
 public class Appointment

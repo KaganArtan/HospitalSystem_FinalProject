@@ -1,0 +1,21 @@
+﻿@model IEnumerable<HospitalSystem_FinalProject.Models.Comment>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Content</th>
+            <th>Rating</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var comment in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => comment.Content)</td>
+                <td>@Html.DisplayFor(modelItem => comment.Rating)</td>
+                <td>@Html.DisplayFor(modelItem => comment.CreatedAt)</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -17,6 +17,7 @@ namespace HospitalSystem_FinalProject.Data
         public DbSet<Doctor> Doctors { get; set; } = default!;
         public DbSet<Hospital> Hospitals { get; set; } = default!;
         public DbSet<City> Cities { get; set; } = default!;
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

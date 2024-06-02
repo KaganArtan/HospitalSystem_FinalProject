@@ -23,8 +23,10 @@ namespace HospitalSystem_FinalProject.Controllers
         public async Task<IActionResult> Index()
         {
             var doctors = _context.Doctors
-                                  .Include(d => d.Hospital)
-                                  .Include(d => d.Specialization); // Include Specialization
+                              .Include(d => d.Hospital)
+                              .Include(d => d.Specialization)
+                              .Include(d => d.Comments); // Include Comments
+
             return View(await doctors.ToListAsync());
         }
 
@@ -163,6 +165,48 @@ namespace HospitalSystem_FinalProject.Controllers
         private bool DoctorExists(int id)
         {
             return _context.Doctors.Any(e => e.DoctorId == id);
+        }
+
+        // GET: Doctors/Comment/5
+        public IActionResult Comment(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.DoctorId = id;
+            return View();
+        }
+
+        // POST: Doctors/Comment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Comment([Bind("Content,Rating,DoctorId")] Comment comment)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Comments.Add(comment);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors) });
+        }
+
+        // GET: Doctors/Comments/5
+        public async Task<IActionResult> Comments(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var comments = await _context.Comments
+                .Where(c => c.DoctorId == id)
+                .ToListAsync();
+
+            return Json(comments); // Return as JSON
         }
     }
 }
