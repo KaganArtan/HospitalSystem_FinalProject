@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using HospitalSystem_FinalProject.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Reflection.Metadata;
 
 namespace HospitalSystem_FinalProject.Data
 {
@@ -20,12 +21,14 @@ namespace HospitalSystem_FinalProject.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Appointment>()
+                .ToTable(tb=>tb.UseSqlOutputClause(false))
                 .HasOne(a => a.Hospital)
                 .WithMany(h => h.Appointments)
                 .HasForeignKey(a => a.HospitalId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
+            
         }
     }
 }
