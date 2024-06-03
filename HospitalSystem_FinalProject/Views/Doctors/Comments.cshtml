@@ -1,5 +1,11 @@
 ﻿@model IEnumerable<HospitalSystem_FinalProject.Models.Comment>
 
+@{
+    ViewData["Title"] = "Comments";
+}
+
+<h1>Comments for @ViewBag.DoctorName</h1>
+
 <table class="table">
     <thead>
         <tr>
@@ -12,9 +18,15 @@
         @foreach (var comment in Model)
         {
             <tr>
-                <td>@Html.DisplayFor(modelItem => comment.Content)</td>
-                <td>@Html.DisplayFor(modelItem => comment.Rating)</td>
-                <td>@Html.DisplayFor(modelItem => comment.CreatedAt)</td>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.Rating)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => comment.CreatedAt)
+                </td>
             </tr>
         }
     </tbody>

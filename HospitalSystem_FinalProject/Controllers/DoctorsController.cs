@@ -176,7 +176,7 @@ namespace HospitalSystem_FinalProject.Controllers
             }
 
             ViewBag.DoctorId = id;
-            return View();
+            return PartialView();
         }
 
         // POST: Doctors/Comment
@@ -188,10 +188,9 @@ namespace HospitalSystem_FinalProject.Controllers
             {
                 _context.Comments.Add(comment);
                 await _context.SaveChangesAsync();
-                return Json(new { success = true });
+                return RedirectToAction(nameof(Index));
             }
-
-            return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors) });
+            return View(comment);
         }
 
         // GET: Doctors/Comments/5
@@ -203,10 +202,11 @@ namespace HospitalSystem_FinalProject.Controllers
             }
 
             var comments = await _context.Comments
-                .Where(c => c.DoctorId == id)
-                .ToListAsync();
+                                         .Where(c => c.DoctorId == id)
+                                         .ToListAsync();
 
-            return Json(comments); // Return as JSON
+            ViewBag.DoctorName = (await _context.Doctors.FindAsync(id)).Name;
+            return PartialView(comments);
         }
     }
 }

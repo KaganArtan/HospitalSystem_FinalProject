@@ -1,210 +1,29 @@
-﻿@model IEnumerable<HospitalSystem_FinalProject.Models.Doctor>
+﻿@model HospitalSystem_FinalProject.Models.Comment
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Add Comment";
 }
 
-<h1>Index</h1>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Brand</a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Features</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Pricing</a>
-            </li>
-        </ul>
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="/logout">Logout</a>
-            </li>
-        </ul>
+<form asp-action="Comment">
+    <div class="form-group">
+        <label asp-for="Content" class="control-label"></label>
+        <textarea asp-for="Content" class="form-control"></textarea>
+        <span asp-validation-for="Content" class="text-danger"></span>
     </div>
-</nav>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Hospital.Name)</th>
-            <th>@Html.DisplayNameFor(model => model.First().Specialization.Domain)</th>
-            <th>Average Rating</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            var averageRating = item.Comments.Any() ? item.Comments.Average(c => c.Rating) : 0;
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Hospital.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Specialization.Domain)</td>
-                <td>@averageRating</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.DoctorId" class="btn btn-link">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.DoctorId" class="btn btn-link">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.DoctorId" class="btn btn-link">Delete</a> |
-                    <a href="javascript:void(0);" class="btn btn-link" onclick="showCommentModal(@item.DoctorId, '@item.Name')">Comment</a> |
-                    <a href="javascript:void(0);" class="btn btn-link" onclick="showCommentsModal(@item.DoctorId, '@item.Name')">View Comments</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Comment Modal -->
-<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="commentForm">
-                    <div class="form-group">
-                        <label for="Content" class="control-label">Content</label>
-                        <textarea id="Content" name="Content" class="form-control"></textarea>
-                        <span id="ContentValidation" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="Rating" class="control-label">Rating</label>
-                        <select id="Rating" name="Rating" class="form-control">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                        <span id="RatingValidation" class="text-danger"></span>
-                    </div>
-                    <input type="hidden" id="DoctorId" name="DoctorId" />
-                    <div class="form-group">
-                        <input type="submit" value="Submit" class="btn btn-primary" />
-                    </div>
-                </form>
-            </div>
-        </div>
+    <div class="form-group">
+        <label asp-for="Rating" class="control-label"></label>
+        <select asp-for="Rating" class="form-control">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <span asp-validation-for="Rating" class="text-danger"></span>
     </div>
-</div>
-
-<!-- Comments Modal -->
-<div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="commentsContent">
-                <!-- Comments will be loaded here via JavaScript -->
-            </div>
-        </div>
+    <input type="hidden" asp-for="DoctorId" value="@ViewBag.DoctorId" />
+    <div class="form-group">
+        <input type="submit" value="Submit" class="btn btn-primary" />
     </div>
-</div>
-
-<style>
-    .btn-link {
-        padding: 0;
-        font-weight: normal;
-        vertical-align: middle;
-    }
-
-    .table td {
-        vertical-align: middle;
-    }
-
-    .navbar-nav .nav-link {
-        display: flex;
-        align-items: center;
-        height: 100%;
-    }
-
-    .navbar-nav {
-        margin-left: auto; /* Logout butonunu sağa hizalamak için */
-    }
-</style>
-
-@section Scripts {
-    <script>
-        function showCommentModal(doctorId, doctorName) {
-            $('#DoctorId').val(doctorId);
-            $('#commentModalLabel').text('Add Comment for ' + doctorName);
-            $('#commentModal').modal('show');
-        }
-
-        function showCommentsModal(doctorId, doctorName) {
-            $.ajax({
-                url: '@Url.Action("Comments", "Doctors")/' + doctorId,
-                type: 'GET',
-                success: function (data) {
-                    var commentsHtml = '<table class="table"><thead><tr><th>Content</th><th>Rating</th><th>Date</th></tr></thead><tbody>';
-                    data.forEach(function (comment) {
-                        commentsHtml += '<tr><td>' + comment.content + '</td><td>' + comment.rating + '</td><td>' + new Date(comment.createdAt).toLocaleString() + '</td></tr>';
-                    });
-                    commentsHtml += '</tbody></table>';
-                    $('#commentsContent').html(commentsHtml);
-                    $('#commentsModalLabel').text('Comments for ' + doctorName);
-                    $('#commentsModal').modal('show');
-                },
-                error: function () {
-                    alert('Failed to load comments.');
-                }
-            });
-        }
-
-        $(document).ready(function () {
-            $('#commentForm').submit(function (event) {
-                event.preventDefault();
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: '@Url.Action("Comment", "Doctors")',
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        if (response.success) {
-                            $('#commentModal').modal('hide');
-                            location.reload();
-                        } else {
-                            var errors = response.errors;
-                            $('#ContentValidation').text(errors.Content ? errors.Content[0].errorMessage : '');
-                            $('#RatingValidation').text(errors.Rating ? errors.Rating[0].errorMessage : '');
-                        }
-                    },
-                    error: function (response) {
-                        var errors = response.responseJSON.errors;
-                        $('#ContentValidation').text(errors.Content ? errors.Content[0] : '');
-                        $('#RatingValidation').text(errors.Rating ? errors.Rating[0] : '');
-                    }
-                });
-            });
-
-            // Ensure the modals can be closed properly
-            $('#commentModal, #commentsModal').on('hidden.bs.modal', function () {
-                $(this).find('form')[0].reset();
-                $('#ContentValidation').text('');
-                $('#RatingValidation').text('');
-            });
-
-            // Close button functionality
-            $('.close').click(function () {
-                $(this).closest('.modal').modal('hide');
-            });
-        });
-    </script>
-}
+</form>

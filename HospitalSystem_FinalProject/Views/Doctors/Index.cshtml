@@ -7,7 +7,7 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
+    <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -30,50 +30,26 @@
                 <td>@averageRating</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.DoctorId">Edit</a> |
-
-                    <a asp-action="Delete" asp-route-id="@item.DoctorId">Delete</a> |
-                    <a href="javascript:void(0);" onclick="showCommentModal(@item.DoctorId, '@item.Name')">Comment</a> |
-                    <a href="javascript:void(0);" onclick="showCommentsModal(@item.DoctorId, '@item.Name')">View Comments</a>
+                    <a asp-action="Details" asp-route-id="@item.DoctorId">Details</a> |
+                    <a href="javascript:void(0);" onclick="showCommentForm('@item.DoctorId')">Comment</a> |
+                    <a href="javascript:void(0);" onclick="showComments('@item.DoctorId')">View Comments</a> |
+                    <a asp-action="Delete" asp-route-id="@item.DoctorId">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- Comment Modal -->
+<!-- Comment Form Modal -->
 <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="commentModalLabel">Add Comment</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="commentForm">
-                    <div class="form-group">
-                        <label for="Content" class="control-label">Content</label>
-                        <textarea id="Content" name="Content" class="form-control"></textarea>
-                        <span id="ContentValidation" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label for="Rating" class="control-label">Rating</label>
-                        <select id="Rating" name="Rating" class="form-control">
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                        </select>
-                        <span id="RatingValidation" class="text-danger"></span>
-                    </div>
-                    <input type="hidden" id="DoctorId" name="DoctorId" />
-                    <div class="form-group">
-                        <input type="submit" value="Submit" class="btn btn-primary" />
-                    </div>
-                </form>
+                <div id="commentFormContainer"></div>
             </div>
         </div>
     </div>
@@ -81,86 +57,35 @@
 
 <!-- Comments Modal -->
 <div class="modal fade" id="commentsModal" tabindex="-1" aria-labelledby="commentsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="commentsModalLabel">Comments</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="commentsContent">
-                <!-- Comments will be loaded here via JavaScript -->
+            <div class="modal-body">
+                <div id="commentsContainer"></div>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function showCommentModal(doctorId, doctorName) {
-            $('#DoctorId').val(doctorId);
-            $('#commentModalLabel').text('Add Comment for ' + doctorName);
-            $('#commentModal').modal('show');
-        }
-
-        function showCommentsModal(doctorId, doctorName) {
-            $.ajax({
-                url: '@Url.Action("Comments", "Doctors")/' + doctorId,
-                type: 'GET',
-                success: function (data) {
-                    var commentsHtml = '<table class="table"><thead><tr><th>Content</th><th>Rating</th><th>Date</th></tr></thead><tbody>';
-                    data.forEach(function (comment) {
-                        commentsHtml += '<tr><td>' + comment.content + '</td><td>' + comment.rating + '</td><td>' + new Date(comment.createdAt).toLocaleString() + '</td></tr>';
-                    });
-                    commentsHtml += '</tbody></table>';
-                    $('#commentsContent').html(commentsHtml);
-                    $('#commentsModalLabel').text('Comments for ' + doctorName);
-                    $('#commentsModal').modal('show');
-                },
-                error: function () {
-                    alert('Failed to load comments.');
-                }
+        function showCommentForm(doctorId) {
+            $.get('/Doctors/Comment/' + doctorId, function (data) {
+                $('#commentFormContainer').html(data);
+                $('#commentModal').modal('show');
             });
         }
 
-        $(document).ready(function () {
-            $('#commentForm').submit(function (event) {
-                event.preventDefault();
-                var formData = $(this).serialize();
-                $.ajax({
-                    url: '@Url.Action("Comment", "Doctors")',
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        if (response.success) {
-                            $('#commentModal').modal('hide');
-                            location.reload();
-                        } else {
-                            var errors = response.errors;
-                            $('#ContentValidation').text(errors.Content ? errors.Content[0].errorMessage : '');
-                            $('#RatingValidation').text(errors.Rating ? errors.Rating[0].errorMessage : '');
-                        }
-                    },
-                    error: function (response) {
-                        var errors = response.responseJSON.errors;
-                        $('#ContentValidation').text(errors.Content ? errors.Content[0] : '');
-                        $('#RatingValidation').text(errors.Rating ? errors.Rating[0] : '');
-                    }
-                });
+        function showComments(doctorId) {
+            $.get('/Doctors/Comments/' + doctorId, function (data) {
+                $('#commentsContainer').html(data);
+                $('#commentsModal').modal('show');
             });
-
-            // Ensure the modals can be closed properly
-            $('#commentModal, #commentsModal').on('hidden.bs.modal', function () {
-                $(this).find('form')[0].reset();
-                $('#ContentValidation').text('');
-                $('#RatingValidation').text('');
-            });
-
-            // Close button functionality
-            $('.close').click(function () {
-                $(this).closest('.modal').modal('hide');
-            });
-        });
+        }
     </script>
 }
