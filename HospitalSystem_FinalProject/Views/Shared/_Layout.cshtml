@@ -7,49 +7,98 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HospitalSystem_FinalProject.styles.css" asp-append-version="true" />
+    <style>
+        .navbar-custom {
+            background-color: #007bff;
+        }
+
+            .navbar-custom .navbar-brand,
+            .navbar-custom .nav-link {
+                color: white;
+            }
+
+        .footer-custom {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+            .footer-custom a {
+                color: #ffc107;
+            }
+
+        .table-custom {
+            margin: 20px 0;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table-custom th,
+            .table-custom td {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            .table-custom th {
+                padding-top: 12px;
+                padding-bottom: 12px;
+                text-align: left;
+                background-color: #007bff;
+                color: white;
+            }
+
+        body {
+            background-color: #f8f9fa; /* Açık gri arka plan rengi */
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-custom navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HospitalSystem_FinalProject</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">HospitalSystem</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Hospitals" asp-action="Index">Hastaneler</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Hospitals" asp-action="Index">Hastaneler</a>
+                            <a class="nav-link" asp-area="" asp-controller="Doctors" asp-action="Index">Doktorlar</a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Appointments" asp-action="Index">Randevularım</a>
+                                <a class="nav-link" asp-area="" asp-controller="Appointments" asp-action="Index">Randevularım</a>
                             </li>
                         }
                     </ul>
+                    <form class="d-flex" action="https://www.google.com/search" method="get" target="_blank">
+                        <input class="form-control me-2" type="search" name="q" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-light" type="submit">Search</button>
+                    </form>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container" style="padding-bottom: 70px;">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer-custom">
         <div class="container">
-            &copy; 2024 - HospitalSystem_FinalProject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2024 - HospitalSystem_FinalProject
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

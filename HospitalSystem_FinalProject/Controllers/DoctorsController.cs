@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using HospitalSystem_FinalProject.Data;
 using HospitalSystem_FinalProject.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HospitalSystem_FinalProject.Controllers
 {
@@ -50,6 +51,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // GET: Doctors/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.HospitalId = new SelectList(_context.Hospitals, "HospitalId", "Name");
@@ -58,10 +60,9 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // POST: Doctors/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("DoctorId,Name,HospitalId,SpecializationId")] Doctor doctor)
         {
             if (ModelState.IsValid)
@@ -76,6 +77,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // GET: Doctors/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -97,6 +99,7 @@ namespace HospitalSystem_FinalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("DoctorId,Name,HospitalId")] Doctor doctor)
         {
             if (id != doctor.DoctorId)
@@ -129,6 +132,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // GET: Doctors/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

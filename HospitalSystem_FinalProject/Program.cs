@@ -17,15 +17,13 @@ namespace HospitalSystem_FinalProject
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddRoles<IdentityRole>() // Role management ekleniyor
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
             builder.Services.AddAuthentication();
             builder.Services.AddAuthorization();
 
-
             var app = builder.Build();
-
-            
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

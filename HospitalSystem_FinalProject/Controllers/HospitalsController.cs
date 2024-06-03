@@ -56,6 +56,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         [Authorize]
+        [Authorize(Roles = "Admin")]
         // GET: Hospitals/Create
         public IActionResult Create()
         {
@@ -72,6 +73,7 @@ namespace HospitalSystem_FinalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("HospitalId,Name,Address,Phone,CityId")] Hospital hospital)
         {
             if (ModelState.IsValid)
@@ -85,6 +87,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // GET: Hospitals/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -106,6 +109,7 @@ namespace HospitalSystem_FinalProject.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("HospitalId,Name,Address,Phone,CityId")] Hospital hospital)
         {
             if (id != hospital.HospitalId)
@@ -138,6 +142,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // GET: Hospitals/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -159,6 +164,7 @@ namespace HospitalSystem_FinalProject.Controllers
         // POST: Hospitals/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var hospital = await _context.Hospitals.FindAsync(id);
