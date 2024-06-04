@@ -16,7 +16,7 @@
         <span asp-validation-for="AppointmentDateTime" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <input type="submit" value="Create" class="btn btn-primary" />
+        <input type="submit" value="Oluştur" class="btn btn-primary" />
     </div>
 </form>
 
@@ -49,28 +49,9 @@
                 if (day === 6 || day === 0 || hours < 8 || hours >= 17 || minutes % 15 !== 0) {
                     e.preventDefault();
                     alert('Randevu yalnızca hafta içi 08:00 - 17:00 saatleri arasında ve 15 dakikalık aralıklarla olabilir.');
-                } else {
-                    // Formun gönderilmesini engellemeden önce bir kontrol daha yapıyoruz
-                    const doctorId = $('#DoctorId').val();
-                    $.ajax({
-                        url: '@Url.Action("IsAppointmentSlotAvailable")',
-                        type: 'GET',
-                        data: {
-                            doctorId: doctorId,
-                            appointmentDateTime: appointmentDateTime.toISOString()
-                        },
-                        async: false, // Senkronize olmasını sağlıyoruz
-                        success: function (data) {
-                            if (!data.isAvailable) {
-                                e.preventDefault();
-                                alert('Bu zaman diliminde zaten bir randevu var. Lütfen başka bir zaman seçin.');
-                            }
-                        }
-                    });
                 }
             });
         });
-
     }
 </script>
     @{
