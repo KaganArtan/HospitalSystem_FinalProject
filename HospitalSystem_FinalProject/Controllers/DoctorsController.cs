@@ -13,6 +13,7 @@ namespace HospitalSystem_FinalProject.Controllers
 {
     public class DoctorsController : Controller
     {
+
         private readonly ApplicationDbContext _context;
 
         public DoctorsController(ApplicationDbContext context)
@@ -21,6 +22,7 @@ namespace HospitalSystem_FinalProject.Controllers
         }
 
         // GET: Doctors
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var doctors = _context.Doctors

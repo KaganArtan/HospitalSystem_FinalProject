@@ -31,5 +31,6 @@ namespace HospitalSystem_FinalProject.Data
             base.OnModelCreating(modelBuilder);
             
         }
+
     }
 }

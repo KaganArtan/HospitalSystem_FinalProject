@@ -60,4 +60,33 @@ public class Appointment
     public int HospitalId { get; set; }
     public Hospital? Hospital { get; set; }
     public DateTime AppointmentDateTime { get; set; }
+    public bool IsValidAppointmentTime()
+    {
+        if (AppointmentDateTime < DateTime.Now)
+        {
+            return false;
+        }
+
+        if (AppointmentDateTime.DayOfWeek == DayOfWeek.Saturday || AppointmentDateTime.DayOfWeek == DayOfWeek.Sunday)
+        {
+            return false;
+        }
+
+        var appointmentTime = AppointmentDateTime.TimeOfDay;
+        var startTime = new TimeSpan(8, 0, 0); // 08:00
+        var endTime = new TimeSpan(17, 0, 0); // 17:00
+
+        if (appointmentTime < startTime || appointmentTime >= endTime)
+        {
+            return false;
+        }
+
+        if (appointmentTime.Minutes % 15 != 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
 }

@@ -1,11 +1,5 @@
 ﻿@model HospitalSystem_FinalProject.Models.Appointment
 
-@{
-    ViewData["Title"] = "Create";
-}
-
-<h4>Appointment</h4>
-<hr />
 <form id="createAppointmentForm" asp-action="Create">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
@@ -18,7 +12,7 @@
     </div>
     <div class="form-group">
         <label asp-for="AppointmentDateTime" class="control-label"></label>
-        <input asp-for="AppointmentDateTime" class="form-control" />
+        <input asp-for="AppointmentDateTime" class="form-control" type="datetime-local" id="AppointmentDateTime" />
         <span asp-validation-for="AppointmentDateTime" class="text-danger"></span>
     </div>
     <div class="form-group">
@@ -45,8 +39,40 @@
                     }
                 });
             });
+
+            $('#createAppointmentForm').submit(function (e) {
+                const appointmentDateTime = new Date(document.getElementById('AppointmentDateTime').value);
+                const day = appointmentDateTime.getDay();
+                const hours = appointmentDateTime.getHours();
+                const minutes = appointmentDateTime.getMinutes();
+
+                if (day === 6 || day === 0 || hours < 8 || hours >= 17 || minutes % 15 !== 0) {
+                    e.preventDefault();
+                    alert('Randevu yalnızca hafta içi 08:00 - 17:00 saatleri arasında ve 15 dakikalık aralıklarla olabilir.');
+                } else {
+                    // Formun gönderilmesini engellemeden önce bir kontrol daha yapıyoruz
+                    const doctorId = $('#DoctorId').val();
+                    $.ajax({
+                        url: '@Url.Action("IsAppointmentSlotAvailable")',
+                        type: 'GET',
+                        data: {
+                            doctorId: doctorId,
+                            appointmentDateTime: appointmentDateTime.toISOString()
+                        },
+                        async: false, // Senkronize olmasını sağlıyoruz
+                        success: function (data) {
+                            if (!data.isAvailable) {
+                                e.preventDefault();
+                                alert('Bu zaman diliminde zaten bir randevu var. Lütfen başka bir zaman seçin.');
+                            }
+                        }
+                    });
+                }
+            });
         });
-    </script>
+
+    }
+</script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

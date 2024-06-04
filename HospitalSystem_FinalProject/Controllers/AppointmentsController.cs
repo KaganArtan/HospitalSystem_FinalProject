@@ -67,6 +67,21 @@ namespace HospitalSystem_FinalProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DoctorId,HospitalId,AppointmentDateTime")] Appointment appointment)
         {
+            if (!appointment.IsValidAppointmentTime())
+            {
+                ModelState.AddModelError("AppointmentDateTime", "Randevu yalnızca bugünden sonrası, hafta içi 08:00 - 17:00 saatleri arasında ve 15 dakikalık aralıklarla olabilir.");
+            }
+
+            // Aynı zamanda başka bir randevunun olup olmadığını kontrol et
+            var existingAppointment = await _context.Appointments
+                .Where(a => a.DoctorId == appointment.DoctorId && a.AppointmentDateTime == appointment.AppointmentDateTime)
+                .FirstOrDefaultAsync();
+
+            if (existingAppointment != null)
+            {
+                ModelState.AddModelError("AppointmentDateTime", "Bu zaman diliminde zaten bir randevu var. Lütfen başka bir zaman seçin.");
+            }
+
             if (ModelState.IsValid)
             {
                 appointment.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -77,6 +92,14 @@ namespace HospitalSystem_FinalProject.Controllers
             return PartialView("_CreatePartial", appointment);
         }
 
+        public async Task<IActionResult> IsAppointmentSlotAvailable(int doctorId, DateTime appointmentDateTime)
+        {
+            var existingAppointment = await _context.Appointments
+                .Where(a => a.DoctorId == doctorId && a.AppointmentDateTime == appointmentDateTime)
+                .FirstOrDefaultAsync();
+
+            return Json(new { isAvailable = existingAppointment == null });
+        }
 
 
         // GET: Appointments/Edit/5
